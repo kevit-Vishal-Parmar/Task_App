@@ -4,10 +4,12 @@ const validator = require("validator");
 
 const User = mongoose.model('User',{
     name:{
-        type : String
+        type : String,
+        required : true
     },
     age:{
-        type : Number
+        type : Number,
+        required : true
     },
     email : {
         type : String,

@@ -48,6 +48,43 @@ app.get("/user/:id", async (req, res) => {
     }
 })
 
+//* Update User.
+
+app.patch("/user/:id", async (req, res) => {
+    const allowedUpdate = ["name", "age", "email", "password"];
+    const updates = Object.keys(allowedUpdate);
+    const isValidation = updates.every((update) => allowedUpdate.includes(update))
+
+    if (!isValidation) {
+        return res.status(400).send({ error: "Invalid Update!" })
+    }
+    try {
+        const _id = req.params.id;
+        const user = await User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true })
+        if (!user) {
+            res.status(404).send()
+        }
+        res.send(user)
+    } catch (e) {
+        res.status(400).send(e)
+    }
+})
+
+//*Delete a User
+
+app.delete("/user/:id",async (req, res) => {
+    try {
+        const _id = req.params.id;
+        const user = await User.findByIdAndDelete(_id);
+        if (!user) {
+            res.status(404).status({error : "User Is Not Exits"})
+        }
+        res.send(user)
+    } catch (e) {
+        res.status(500).send(e)
+    }
+})
+
 //* Add New Task
 
 app.post("/tasks", async (req, res) => {
@@ -88,6 +125,42 @@ app.get("/task/:id", async (req, res) => {
     }
 })
 
+//* Update Task
+
+app.patch("/task/:id", async (req, res) => {
+    const allowedUpdate = ["description", "complete"];
+    const updates = Object.keys(allowedUpdate);
+    const isValidation = updates.every((update) => allowedUpdate.includes(update))
+
+    if (!isValidation) {
+        return res.status(400).send({ error: "Invalid Update!" })
+    }
+    try {
+        const _id = req.params.id;
+        const task = await Task.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true })
+        if (!task) {
+            return res.status(404).send()
+        }
+        res.send(task)
+    } catch (e) {
+        res.status(400).send(e)
+    }
+})
+
+//*Delete a Task
+
+app.delete("/task/:id",async (req, res) => {
+    try {
+        const _id = req.params.id;
+        const task = await Task.findByIdAndDelete(_id);
+        if (!task) {
+            res.status(404).status({error : "Task Is Not Exits"})
+        }
+        res.send(task)
+    } catch (e) {
+        res.status(500).send(e)
+    }
+})
 //! Listen App In Port
 
 app.listen(PORT, () => {
