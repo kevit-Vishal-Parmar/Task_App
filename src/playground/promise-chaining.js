@@ -9,3 +9,5 @@ User.findByIdAndUpdate("62cfb8e57240df8e958b0a1c",{age : 21}).then((res)=>{
 }).catch((error)=>{
     console.log(error);
 })
+
+
