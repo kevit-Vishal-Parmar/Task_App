@@ -51,12 +51,18 @@ router.patch("/user/:id", async (req, res) => {
     const updates = Object.keys(allowedUpdate);
     const isValidation = updates.every((update) => allowedUpdate.includes(update))
 
-    if (!isValidation) {
-        return res.status(400).send({ error: "Invalid Update!" })
-    }
+    // if (!isValidation) {
+    //     return res.status(400).send({ error: "Invalid Update!" })
+    // }
     try {
         const _id = req.params.id;
-        const user = await User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true })
+        // const user = await User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true })
+        const user = await User.findByIdAndUpdate(_id);
+
+        updates.forEach((update) => user[update] = req.body[update])
+
+        await user.save()
+
         if (!user) {
             res.status(404).send()
         }
@@ -68,12 +74,12 @@ router.patch("/user/:id", async (req, res) => {
 
 //*Delete a User
 
-router.delete("/user/:id",async (req, res) => {
+router.delete("/user/:id", async (req, res) => {
     try {
         const _id = req.params.id;
         const user = await User.findByIdAndDelete(_id);
         if (!user) {
-            res.status(404).status({error : "User Is Not Exits"})
+            res.status(404).status({ error: "User Is Not Exits" })
         }
         res.send(user)
     } catch (e) {
