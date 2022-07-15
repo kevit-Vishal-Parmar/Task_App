@@ -51,8 +51,8 @@ app.get("/user/:id", async (req, res) => {
 //* Update User.
 
 app.patch("/user/:id", async (req, res) => {
-    const allowedUpdate = ["name", "age", "email", "password"];
-    const updates = Object.keys(allowedUpdate);
+    const allowedUpdate = ["name","age","email","password"];
+    const updates = Object.values(allowedUpdate);
     const isValidation = updates.every((update) => allowedUpdate.includes(update))
 
     if (!isValidation) {
@@ -72,12 +72,12 @@ app.patch("/user/:id", async (req, res) => {
 
 //*Delete a User
 
-app.delete("/user/:id",async (req, res) => {
+app.delete("/user/:id", async (req, res) => {
     try {
         const _id = req.params.id;
         const user = await User.findByIdAndDelete(_id);
         if (!user) {
-            res.status(404).status({error : "User Is Not Exits"})
+            res.status(404).status({ error: "User Is Not Exits" })
         }
         res.send(user)
     } catch (e) {
@@ -129,7 +129,7 @@ app.get("/task/:id", async (req, res) => {
 
 app.patch("/task/:id", async (req, res) => {
     const allowedUpdate = ["description", "complete"];
-    const updates = Object.keys(allowedUpdate);
+    const updates = Object.values(allowedUpdate);
     const isValidation = updates.every((update) => allowedUpdate.includes(update))
 
     if (!isValidation) {
@@ -149,12 +149,12 @@ app.patch("/task/:id", async (req, res) => {
 
 //*Delete a Task
 
-app.delete("/task/:id",async (req, res) => {
+app.delete("/task/:id", async (req, res) => {
     try {
         const _id = req.params.id;
         const task = await Task.findByIdAndDelete(_id);
         if (!task) {
-            res.status(404).status({error : "Task Is Not Exits"})
+            res.status(404).status({ error: "Task Is Not Exits" })
         }
         res.send(task)
     } catch (e) {
