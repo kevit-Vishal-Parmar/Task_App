@@ -1,6 +1,7 @@
 const express = require("express");
 const { model, models } = require("mongoose");
 const Task = require("../models/task");
+const { update } = require("../models/user");
 const router = new express.Router();
 
 //* Add New Task
@@ -47,7 +48,7 @@ router.get("/task/:id", async (req, res) => {
 
 router.patch("/task/:id", async (req, res) => {
     const allowedUpdate = ["description", "complete"];
-    const updates = Object.keys(allowedUpdate);
+    const updates = Object.values(allowedUpdate);
     const isValidation = updates.every((update) => allowedUpdate.includes(update))
 
     if (!isValidation) {
@@ -55,7 +56,12 @@ router.patch("/task/:id", async (req, res) => {
     }
     try {
         const _id = req.params.id;
-        const task = await Task.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true })
+        // const task = await Task.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true })
+        const task = await Task.findByIdAndUpdate(_id)
+
+        updates.forEach(update => task[update] = req.body[update])
+        await task.save()
+        
         if (!task) {
             return res.status(404).send()
         }
@@ -67,12 +73,12 @@ router.patch("/task/:id", async (req, res) => {
 
 //*Delete a Task
 
-router.delete("/task/:id",async (req, res) => {
+router.delete("/task/:id", async (req, res) => {
     try {
         const _id = req.params.id;
         const task = await Task.findByIdAndDelete(_id);
         if (!task) {
-            res.status(404).status({error : "Task Is Not Exits"})
+            res.status(404).status({ error: "Task Is Not Exits" })
         }
         res.send(task)
     } catch (e) {
