@@ -27,26 +27,9 @@ router.get("/user/me", auth, async (req, res) => {
         console.log(e);
     }
 })
-
-//* Get One User.
-
-router.get("/user/:id", async (req, res) => {
-    try {
-        const _id = req.params.id;
-        const user = await User.findById(_id)
-        if (!user) {
-            return res.status(404).send()
-        }
-        res.send(user)
-    }
-    catch (e) {
-        res.status(500).send(e)
-    }
-})
-
 //* Update User.
 
-router.patch("/user/:id", async (req, res) => {
+router.patch("/user/me", auth, async (req, res) => {
     const allowedUpdate = ["name", "age", "email", "password"];
     const updates = Object.values(allowedUpdate);
     const isValidation = updates.every((update) => allowedUpdate.includes(update))
@@ -55,17 +38,9 @@ router.patch("/user/:id", async (req, res) => {
         return res.status(400).send({ error: "Invalid Update!" })
     }
     try {
-        const _id = req.params.id;
-        // const user = await User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true })
-        const user = await User.findByIdAndUpdate(_id);
-
-        updates.forEach((update) => user[update] = req.body[update])
-        await user.save()
-
-        if (!user) {
-            res.status(404).send()
-        }
-        res.send(user)
+        updates.forEach((update) => req.user[update] = req.body[update])
+        await req.user.save()
+        res.send(req.user)
     } catch (e) {
         res.status(400).send(e)
     }
@@ -73,14 +48,10 @@ router.patch("/user/:id", async (req, res) => {
 
 //*Delete a User
 
-router.delete("/user/:id", async (req, res) => {
+router.delete("/user/me", auth, async (req, res) => {
     try {
-        const _id = req.params.id;
-        const user = await User.findByIdAndDelete(_id);
-        if (!user) {
-            res.status(404).status({ error: "User Is Not Exits" })
-        }
-        res.send(user)
+        await req.user.remove()
+        res.send(req.user)
     } catch (e) {
         res.status(500).send(e)
     }
