@@ -96,7 +96,7 @@ userSchema.pre('save', async function (next) {
 
 //Delete A Task When User is Removed
 
-userSchema.pre("remove", async function () {
+userSchema.pre("remove", async function (next) {
     const user = this;
     await Task.deleteMany({ owner: user._id })
     next();
