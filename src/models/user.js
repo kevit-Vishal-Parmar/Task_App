@@ -37,10 +37,10 @@ const userSchema = new mongoose.Schema({
 });
 // Hiding a Private Data.
 
-userSchema.methods.getPublicProfile = function () {
+userSchema.methods.toJSON = function () {
     const user = this
     const ObjUser = user.toObject()
-
+    
     delete ObjUser.password
     delete ObjUser.tokens
 
