@@ -22,7 +22,7 @@ router.post("/users", async (req, res) => {
 
 router.get("/user/me", auth, async (req, res) => {
     try {
-        res.send(user)
+        res.send(req.user)
     } catch (e) {
         console.log(e);
     }

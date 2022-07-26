@@ -24,10 +24,22 @@ router.post("/tasks", auth, async (req, res) => {
 
 //* Get All Tasks.
 
-router.get("/tasks", auth,async (req, res) => {
+router.get("/tasks", auth, async (req, res) => {
     try {
-        const tasks = await Task.find({owner : req.user._id})
-        res.status(200).send(tasks)
+        await req.user.populate({
+            path: "tasks",
+            match: {
+                complete: req.query.complete
+            }, 
+            options: {
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip),
+                sort:{
+                    description : ((req.query.sort)==="desc") ? -1 : 0
+                }                
+            }
+        })
+        res.send(req.user.tasks)
     } catch (e) {
         res.status(500).send(e)
     }
@@ -35,10 +47,10 @@ router.get("/tasks", auth,async (req, res) => {
 
 //* Get One Task
 
-router.get("/task/:id", auth,async (req, res) => {
+router.get("/task/:id", auth, async (req, res) => {
     try {
         const _id = req.params.id;
-        const task = await Task.findOne({_id,owner : req.user._id})
+        const task = await Task.findOne({ _id, owner: req.user._id })
         if (!task) {
             return res.status(404).send()
         }
@@ -50,17 +62,17 @@ router.get("/task/:id", auth,async (req, res) => {
 
 //* Update Task
 
-router.patch("/task/:id",auth, async (req, res) => {
+router.patch("/task/:id", auth, async (req, res) => {
     const allowedUpdate = ["description", "complete"];
     const updates = Object.values(allowedUpdate);
     const isValidation = updates.every((update) => allowedUpdate.includes(update))
-    
+
     if (!isValidation) {
         return res.status(400).send({ error: "Invalid Update!" })
     }
     try {
         const _id = req.params.id;
-        const task = await Task.findOne({_id : _id,owner : req.user._id})
+        const task = await Task.findOne({ _id: _id, owner: req.user._id })
 
         updates.forEach(update => task[update] = req.body[update])
         await task.save()
@@ -76,10 +88,10 @@ router.patch("/task/:id",auth, async (req, res) => {
 
 //*Delete a Task
 
-router.delete("/task/:id",auth ,async (req, res) => {
+router.delete("/task/:id", auth, async (req, res) => {
     try {
         const _id = req.params.id;
-        const task = await Task.findOneAndDelete({_id : _id , owner  : req.user._id});
+        const task = await Task.findOneAndDelete({ _id: _id, owner: req.user._id });
         if (!task) {
             res.status(404).status({ error: "Task Is Not Exits" })
         }
