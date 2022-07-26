@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     }]
-});
+},{timestamps : true});
 //Add Task  RelationShip To User.
 
 userSchema.virtual('tasks', {
@@ -72,14 +72,14 @@ userSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({ email })
     if (!user) {
         throw new Error("Unable To Login")
+    } else {
+
+        const isMatch = await bcrypt.compare(password, user.password)
+
+        if (!isMatch) {
+            throw new Error("Invalid Username Or Password")
+        }
     }
-
-    const isMatch = await bcrypt.compare(password, user.password)
-
-    if (!isMatch) {
-        throw new Error("Unable To Login")
-    }
-
     return user;
 }
 
