@@ -12,6 +12,9 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    avatar:{
+        type:Buffer
+    },
     email: {
         type: String,
         required: true,
