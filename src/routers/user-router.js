@@ -63,7 +63,7 @@ router.delete("/user/me", auth, async (req, res) => {
 
 //* Login User By Using Email and Password
 
-router.post("/user/login", async (req, res) => {
+router.post("/user/login",async (req, res) => {
   try {
     const user = await User.findByCredentials(
       req.body.email,
@@ -127,7 +127,7 @@ router.post(
       .toBuffer();
     req.user.avatar = buffer;
     await req.user.save();
-    res.send();
+    res.send({"Message" : "Your Avatar Added Successfully."});
   },
   (error, req, res, next) => {
     res.status(400).send({ error: error.message });
@@ -142,7 +142,7 @@ router.delete(
   async (req, res) => {
     req.user.avatar = undefined;
     await req.user.save();
-    res.send();
+    res.send({"Message" : "Your Avatar Removed Successfully."});
   },
   (error, req, res, next) => {
     res.status(400).send({ error: error.message });
